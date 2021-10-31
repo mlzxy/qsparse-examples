@@ -1,5 +1,10 @@
 # ESPCN
 
+The code of this example is modified from [yjn870/ESPCN-pytorch](https://github.com/yjn870/ESPCN-pytorch). Much of the credit goes to [yjn870](https://github.com/yjn870).
+
+<details>
+<summary>Original README</summary>
+
 This repository is implementation of the ["Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network"](https://arxiv.org/abs/1609.05158).
 
 <center><img src="./thumbnails/fig1.png"></center>
@@ -95,3 +100,9 @@ PSNR was calculated on the Y channel.
     	</td>
     </tr>  
 </table>
+
+
+</details>
+
+<br/>
+

@@ -1,6 +1,6 @@
 # Train CIFAR10 with PyTorch
 
-The code of this example is modified from [kuangliu/pytorch-cifar](https://github.com/kuangliu/pytorch-cifar). Credits to [kuangliu](https://github.com/kuangliu).
+The code of this example is modified from [kuangliu/pytorch-cifar](https://github.com/kuangliu/pytorch-cifar). Much of the credit goes to [kuangliu](https://github.com/kuangliu).
 
 <details>
 <summary>Original README</summary>
@@ -53,23 +53,19 @@ python3 main.py --epochs 250 --train-mode <train mode>
 Results of different training schedules can be found in the table below. 
 
 
-| Training Schedule[^1] | Train Mode |  Accuracy |
+| Training Schedule | Train Mode |  Accuracy |
 | --- | --- | --- |
 | Baseline | `float` |  92.6 |
-| ![](https://latex.codecogs.com/svg.latex?Q_8%28w%2Cf%29) | `quantize-late`[^2] | 92.52 |
+| ![](https://latex.codecogs.com/svg.latex?Q_8%28w%2Cf%29) | `quantize-late` | 92.52 |
 | ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_weight-quantize` | 92.23 |
 | ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%29) | `quantize-prune_weight-late` | 85.94 |
 | ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_both-quantize` | 91.44 |
 | ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%2C%20f%29) | `quantize-prune_both-late` | 86.84 |
 
-
-
-
-[^1]: ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) denotes the "prune-then-quantize" schedule on both activations and weights. The same rule applies to others.
-
-[^2]: `quantize-late` tells the program to use a set of parameters that delay the quantization to the latter half of the training since we find early quantization hurts the accuracy to a large extend. The same rule applies to others with the `late` tag. 
-
 ## Note
 
 Although the original repo claims to achieve 94.43% with MobileNetV2, we only achieves 92.6% with the provided hyper parameters. It is a known issue that the reported accuracy is not achieved [issues#74](https://github.com/kuangliu/pytorch-cifar/issues/74).
 
+![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) denotes the "prune-then-quantize" schedule on both activations and weights. The same rule applies to others.
+
+The `quantize-late` train mode tells the program to use a set of parameters that delay the quantization to the latter half of the training since we find early quantization hurts the accuracy to a large extend. The same rule applies to others with the `late` tag. 
