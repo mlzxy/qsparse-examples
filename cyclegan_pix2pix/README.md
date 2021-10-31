@@ -1,9 +1,15 @@
+# CycleGAN and pix2pix in PyTorch
+
+
+The code of this example is modified from [junyanz/pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix). Much of the credit goes to [junyanz](https://github.com/junyanz).
+
+<details>
+<summary>Original README</summary>
 
 <img src='imgs/horse2zebra.gif' align="right" width=384>
 
 <br><br><br>
 
-# CycleGAN and pix2pix in PyTorch
 
 **New**:  Please check out [contrastive-unpaired-translation](https://github.com/taesungp/contrastive-unpaired-translation) (CUT), our new unpaired image-to-image translation model that enables fast and memory-efficient training.
 
@@ -242,3 +248,93 @@ If you love cats, and love reading cool graphics, vision, and learning papers, p
 
 ## Acknowledgments
 Our code is inspired by [pytorch-DCGAN](https://github.com/pytorch/examples/tree/master/dcgan).
+
+
+
+</details>
+
+<br/>
+
+The following command can be run to train and test the model, where the train mode is the command line argument to specify train schedules of quantization and pruning.  We maintain all hyper parameters to be identical to the original repo except that the `n_epochs` parameter is set to 200. 
+
+```bash
+# For Pix2Pix
+
+## download dataset
+bash ./datasets/download_pix2pix_dataset.sh facades
+
+## train
+python3 train.py  --name facades_pix2pix --model pix2pix --direction BtoA \
+             --n_epochs 200  --n_epochs_decay 100  --checkpoints_dir checkpoints_pix2pix/ \
+             --dataroot datasets/facades --train-mode <train mode>
+
+## generate images on the test set
+python3 test.py  --name facades_pix2pix --model pix2pix --direction BtoA \
+            --checkpoints_dir checkpoints_pix2pix/ --results_dir results_pix2pix/ \
+            --dataroot datasets/facades --train-mode <train mode>
+
+# For CycleGAN
+
+## download dataset
+bash ./scripts/download_cyclegan_model.sh horse2zebra
+
+## train
+python3 train.py --name horse2zebra_cyclegan --model cycle_gan --n_epochs 200 \
+                --checkpoints_dir checkpoints_cyclegan/ --dataroot datasets/horse2zebra  \
+                --train-mode  <train mode>
+
+## generate images on the test set
+python3 test.py --name horse2zebra_cyclegan --model cycle_gan \
+              --checkpoints_dir checkpoints_cyclegan/ --dataroot datasets/horse2zebra \
+              --results_dir results_cyclegan/ --train-mode <train mode>
+```
+
+Results of different training schedules can be found in the table below. 
+
+
+| Training Schedule | Train Mode |  FID (Pix2Pix) | 
+| --- | --- | --- | -- |
+| Baseline | `float` |  119.90 |  
+| ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_weight-quantize` | 127.1 | 
+| ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%29) | `quantize-prune_weight` | 123.5 | 
+| ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_both-quantize` | 154.8 | 
+| ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%2C%20f%29) | `quantize-prune_both-late` | 135.0 | 
+
+| Training Schedule | Train Mode |  FID (CycleGAN) |
+| --- | --- | --- | -- |
+| Baseline | `float` |   67.1 | 
+| ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%29%20%5Crightarrow%20Q_%7B12%7D%28w%2C%20f%29) | `prune_weight-quantize` | 81.8|
+| ![](https://latex.codecogs.com/svg.latex?Q_%7B12%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%29) | `quantize-prune_weight` | 83.72 |
+| ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B12%7D%28w%2C%20f%29) | `prune_both-quantize` |  100.4 |
+| ![](https://latex.codecogs.com/svg.latex?Q_%7B12%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%2C%20f%29) | `quantize-prune_both-late` |  89.35 |
+
+
+
+Some samples of generated images are listed below.
+
+**Pix2Pix on Facades**
+
+![](./imgs/samples/pix2pix1.png)
+
+
+![](./imgs/samples/pix2pix2.png)
+
+
+![](./imgs/samples/pix2pix3.png)
+
+**CycleGAN on Horse2zebra**
+
+
+![](./imgs/samples/cyclegan1.png)
+
+![](./imgs/samples/cyclegan2.png)
+
+![](./imgs/samples/cyclegan3.png)
+
+
+
+## Note
+
+![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) denotes the "prune-then-quantize" schedule on both activations and weights. The same rule applies to others.
+
+

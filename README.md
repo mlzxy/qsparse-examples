@@ -10,6 +10,6 @@ This repository contains following examples for QSPARSE, which are also the code
 | [fasterrcnn](fasterrcnn/) | Object detection with Faster RCNN using ResNet101 on Pascal VOC. | 
 | [cyclegan_pix2pix](cyclegan_pix2pix/) | Image-to-image translation with two generative adversarial networks (GANs): Pix2Pix and CycleGAN trained on facades and horse2zebra, respectively. |
 
-Feel free to raise an [issue](https://github.com/mlzxy/qsparse-examples/issues/new) if you have any questions.
+Feel free to raise an [issue](https://github.com/mlzxy/qsparse-examples/issues/new) if you encounter any problems.
 
 
