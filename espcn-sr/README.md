@@ -106,3 +106,35 @@ PSNR was calculated on the Y channel.
 
 <br/>
 
+
+The following command can be run to train the model, where the train mode is the command line argument to specify train schedules of quantization and pruning.  We maintain all hyper parameters to be identical to the original repo. 
+
+```bash
+# please check "Original README" for the download urls of 
+# dataset files: 91-image_x3.h5 and data/Set5_x3.h5
+
+python3 train.py --train-file data/91-image_x3.h5  --eval-file data/Set5_x3.h5  \
+    --scale 3  --lr 1e-3 --batch-size 16  --num-epochs 200  --num-workers 8  --train-mode <train mode>
+```
+
+
+
+| Training Schedule | Train Mode |  PSNR |
+| --- | --- | --- |
+| Baseline | `float` |  32.84 |
+| ![](https://latex.codecogs.com/svg.latex?Q_8%28w%2Cf%29) | `quantize` | 32.68|
+| ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_weight-quantize` | 32.51 |
+| ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%29) | `quantize-prune_weight` | 32.54 |
+| ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_both-quantize` | 31.03 |
+| ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%2C%20f%29) | `quantize-prune_both` | 31.66 |
+
+
+## Note
+
+We observe an increase on the variance of training result when activation pruning is applied. Therefore, for each experiment, we run five times and report the average value in the above table.
+
+
+Since the size of images used during testing is larger than those in training, we set the `strict` parameter to `False` for pruning operator. This option is explained with details in [Change input sizes during evaluation](https://qsparse.readthedocs.io/en/latest/advanced_usage/#change-input-sizes-during-evaluation). 
+
+
+![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) denotes the "prune-then-quantize" schedule on both activations and weights. The same rule applies to others.
