@@ -63,7 +63,6 @@ def create_p_q(train_mode, epoch_size):
             elif "feat" in train_mode:
                 # since we already prune activations on the output channel dimension, activation pruning is equivalent to activation+weight pruning
                 return (
-                    # since faster rcnn train on different sizes of images, so we could only do structure pruning on feature
                     prune(**kw, window_size=ws, callback=structured_prune_callback)
                     if len(args) == 0
                     else args[0]

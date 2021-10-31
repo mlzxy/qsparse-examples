@@ -1,5 +1,10 @@
 # A *Faster* Pytorch Implementation of Faster R-CNN
 
+The code of this example is modified from [jwyang/faster-rcnn.pytorch](https://github.com/jwyang/faster-rcnn.pytorch). Much of the credit goes to [jwyang](https://github.com/jwyang).
+
+<details>
+<summary>Original README</summary>
+
 ## Introduction
 
 ### Good news! This repo supports pytorch-1.0 now!!! We borrowed some code and techniques from [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark).
@@ -244,3 +249,50 @@ This project is equally contributed by [Jianwei Yang](https://github.com/jwyang)
         Booktitle = {Advances in Neural Information Processing Systems ({NIPS})},
         Year = {2015}
     }
+
+
+</details>
+
+<br/>
+
+
+The following command can be run to train the model, where the train mode is the command line argument to specify train schedules of quantization and pruning.  We maintain all hyper parameters to be identical to the original repo except that the training epochs is set to 9. 
+
+```bash
+pip3 install -r ./requirements.txt
+cd ./lib
+python3 setup.py clean --all
+python3 setup.py build develop
+cd ..
+
+# please follow the guide in "Original README" to prepare the 
+# PASCAL_VOC 07+12 dataset and ResNet101 ImageNet-pretrained model.
+
+python3 trainval_net.py --dataset pascal_voc --net res101 \
+        --bs 1 --nw 4 --lr 1e-3 --lr_decay_step 5 --epochs 9 \
+        --cuda   --save_dir models/ --data-root data/ \
+        --train-mode <train mode>
+```
+
+
+
+
+| Training Schedule | Train Mode |  mAP |
+| --- | --- | --- |
+| Baseline | `float` |  74.47 |
+| ![](https://latex.codecogs.com/svg.latex?Q_8%28w%2Cf%29) | `quantize-late` | 74.25 |
+| ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_weight-quantize` | 74.44 |
+| ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%29) | `quantize-prune_weight` | 74.13 |
+| ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_feat-quantize` | 73.00 |
+| ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%2C%20f%29) | `quantize-prune_feat-late` | 70.13 |
+
+
+## Note
+
+Since the image sizes differ between each batch during training, we cannot obtain a fixed size binary mask for activation pruning on the convolution layers. To apply activation pruning, we apply structured pruning on the channel dimension of activations, which also naturally includes weight pruning on output channel dimension.
+
+We do not quantize or prune the residual blocks that are frozen in the original implementation.
+
+![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) denotes the "prune-then-quantize" schedule on both activations and weights. The same rule applies to others.
+
+The `late` tag in train mode is used to choose set of parameters that controls when to apply quantization.
