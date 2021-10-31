@@ -293,7 +293,7 @@ Results of different training schedules can be found in the table below.
 
 
 | Training Schedule | Train Mode |  FID (Pix2Pix) | 
-| --- | --- | --- | -- |
+| --- | --- | --- | 
 | Baseline | `float` |  119.90 |  
 | ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) | `prune_weight-quantize` | 127.1 | 
 | ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%29) | `quantize-prune_weight` | 123.5 | 
@@ -301,7 +301,7 @@ Results of different training schedules can be found in the table below.
 | ![](https://latex.codecogs.com/svg.latex?Q_%7B8%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%2C%20f%29) | `quantize-prune_both-late` | 135.0 | 
 
 | Training Schedule | Train Mode |  FID (CycleGAN) |
-| --- | --- | --- | -- |
+| --- | --- | --- | 
 | Baseline | `float` |   67.1 | 
 | ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%29%20%5Crightarrow%20Q_%7B12%7D%28w%2C%20f%29) | `prune_weight-quantize` | 81.8|
 | ![](https://latex.codecogs.com/svg.latex?Q_%7B12%7D%28w%2C%20f%29%20%5Crightarrow%20P_%7B0.5%7D%28w%29) | `quantize-prune_weight` | 83.72 |
