@@ -295,4 +295,4 @@ We do not quantize or prune the residual blocks that are frozen in the original 
 
 ![](https://latex.codecogs.com/svg.latex?P_%7B0.5%7D%28w%2C%20f%29%20%5Crightarrow%20Q_%7B8%7D%28w%2C%20f%29) denotes the "prune-then-quantize" schedule on both activations and weights. The same rule applies to others.
 
-The `late` tag in train mode is used to choose set of parameters that controls when to apply quantization.
+The `late` tag in train mode is used to choose set of parameters that controls when to apply quantization. It actually does not make a large difference in this implementation, but we keep it here for aligning with our existing experiments.
