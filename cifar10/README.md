@@ -47,7 +47,8 @@ python main.py --resume --lr=0.01
 The following command can be run to train the model, where the train mode is the command line argument to specify train schedules of quantization and pruning.  We maintain all hyper parameters to be identical to the original repo except that the training epochs is set to 250. 
 
 ```bash
-python3 main.py --epochs 250 --train-mode <train mode>
+python3 -m pip install torchvision
+python3 main.py --epochs 250  --data-root ./data  --train-mode <train mode> 
 ```
 
 Results of different training schedules can be found in the table below. 
