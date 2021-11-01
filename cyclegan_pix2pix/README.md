@@ -258,6 +258,8 @@ Our code is inspired by [pytorch-DCGAN](https://github.com/pytorch/examples/tree
 The following command can be run to train and test the model, where the train mode is the command line argument to specify train schedules of quantization and pruning.  We maintain all hyper parameters to be identical to the original repo except that the `n_epochs` parameter is set to 200. 
 
 ```bash
+pip3 install -r ./requirements.txt
+
 # For Pix2Pix
 
 ## download dataset
