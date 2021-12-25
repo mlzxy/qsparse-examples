@@ -12,6 +12,16 @@ import _init_paths
 import os
 import sys
 
+import logging
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+root.addHandler(handler)
+
+
 sys.path.insert(0, "lib")
 import os.path as osp
 import numpy as np

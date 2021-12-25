@@ -18,6 +18,16 @@ import argparse
 from mobilenetv2 import MobileNetV2
 from utils import progress_bar
 
+import logging
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+root.addHandler(handler)
+
+
 global_start_time = time()
 
 parser = argparse.ArgumentParser(description="PyTorch CIFAR10 Training")
