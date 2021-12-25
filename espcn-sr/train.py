@@ -15,6 +15,8 @@ from time import time
 from models import ESPCN
 from datasets import TrainDataset, EvalDataset
 from utils import AverageMeter, calc_psnr
+from qsparse.fx import symbolic_trace
+import cloudpickle
 
 
 if __name__ == "__main__":
@@ -29,6 +31,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--num-epochs", type=int, default=200)
     parser.add_argument("--num-workers", type=int, default=8)
+    parser.add_argument("--compile", type=bool, action="store_true")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument(
         "--train-mode",
@@ -79,6 +82,7 @@ if __name__ == "__main__":
         scale_factor=args.scale,
         train_mode=args.train_mode,
         epoch_size=len(train_dataloader),
+        hardware_compat=args.compile,
     ).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(
@@ -144,5 +148,11 @@ if __name__ == "__main__":
 
     print("best epoch: {}, psnr: {:.2f}".format(best_epoch, best_psnr))
     torch.save(best_weights, os.path.join(args.outputs_dir, "best.pth"))
+    if args.compile:
+        torch.save(
+            symbolic_trace(model),
+            os.path.join(args.outputs_dir, "compiled.pkl"),
+            pickle_module=cloudpickle,
+        )
     end_time = time()
     print(f"total elapse {end_time-start_time:0.02f}s")
