@@ -110,7 +110,7 @@ PSNR was calculated on the Y channel.
 The following command can be run to train the model, where the train mode is the command line argument to specify train schedules of quantization and pruning.  We maintain all hyper parameters to be identical to the original repo. 
 
 ```bash
-python3 -m pip install tqdm
+python3 -m pip install tqdm h5py
 
 # please check "Original README" for the download urls of 
 # dataset files: 91-image_x3.h5 and data/Set5_x3.h5
