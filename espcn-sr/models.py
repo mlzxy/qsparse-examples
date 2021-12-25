@@ -86,14 +86,14 @@ class ESPCN(nn.Module):
         self.qin = q()
         self.first_part = nn.Sequential(
             q(nn.Conv2d(num_channels, 64, kernel_size=5, padding=5 // 2)),
-            nn.ReLU if hardware_compat else nn.Tanh(),
             q(),
+            nn.ReLU() if hardware_compat else nn.Tanh(),
             q(nn.Conv2d(64, 32, kernel_size=3, padding=3 // 2))
             if hardware_compat
             else q(p(nn.Conv2d(64, 32, kernel_size=3, padding=3 // 2))),
             p(),
-            nn.ReLU if hardware_compat else nn.Tanh(),
             q(),
+            nn.ReLU() if hardware_compat else nn.Tanh(),
         )
         self.last_part = nn.Sequential(
             q(
@@ -104,6 +104,7 @@ class ESPCN(nn.Module):
                     padding=3 // 2,
                 )
             ),
+            q(),
             nn.PixelShuffle(scale_factor),
         )
 

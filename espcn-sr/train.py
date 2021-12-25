@@ -18,6 +18,15 @@ from utils import AverageMeter, calc_psnr
 from qsparse.fx import symbolic_trace
 import cloudpickle
 
+import logging
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+root.addHandler(handler)
+
 
 if __name__ == "__main__":
     start_time = time()
@@ -31,7 +40,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--num-epochs", type=int, default=200)
     parser.add_argument("--num-workers", type=int, default=8)
-    parser.add_argument("--compile", type=bool, action="store_true")
+    parser.add_argument("--compile", action="store_true")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument(
         "--train-mode",
@@ -149,10 +158,9 @@ if __name__ == "__main__":
     print("best epoch: {}, psnr: {:.2f}".format(best_epoch, best_psnr))
     torch.save(best_weights, os.path.join(args.outputs_dir, "best.pth"))
     if args.compile:
-        torch.save(
-            symbolic_trace(model),
-            os.path.join(args.outputs_dir, "compiled.pkl"),
-            pickle_module=cloudpickle,
-        )
+        traced = symbolic_trace(model),
+        print(str(traced))
+        with open(os.path.join(args.outputs_dir, "compiled.pkl"), "wb") as f:
+            f.write(cloudpickle.dumps(traced))
     end_time = time()
     print(f"total elapse {end_time-start_time:0.02f}s")
