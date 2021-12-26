@@ -15,15 +15,16 @@ from time import time
 from models import ESPCN
 from datasets import TrainDataset, EvalDataset
 from utils import AverageMeter, calc_psnr
-from qsparse.fx import symbolic_trace
+from qsparse.fx import symbolic_trace, resize_activation_sparsity_mask
 import cloudpickle
 
 import logging
+
 root = logging.getLogger()
 root.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 root.addHandler(handler)
 
@@ -41,6 +42,7 @@ if __name__ == "__main__":
     parser.add_argument("--num-epochs", type=int, default=200)
     parser.add_argument("--num-workers", type=int, default=8)
     parser.add_argument("--compile", action="store_true")
+    parser.add_argument("--rgb", action="store_true")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument(
         "--train-mode",
@@ -76,7 +78,7 @@ if __name__ == "__main__":
 
     torch.manual_seed(args.seed)
 
-    train_dataset = TrainDataset(args.train_file)
+    train_dataset = TrainDataset(args.train_file, is_rgb=args.rgb)
     train_dataloader = DataLoader(
         dataset=train_dataset,
         batch_size=args.batch_size,
@@ -84,7 +86,7 @@ if __name__ == "__main__":
         num_workers=args.num_workers,
         pin_memory=False,
     )
-    eval_dataset = EvalDataset(args.eval_file)
+    eval_dataset = EvalDataset(args.eval_file, is_rgb=args.rgb)
     eval_dataloader = DataLoader(dataset=eval_dataset, batch_size=1)
 
     model = ESPCN(
@@ -92,6 +94,7 @@ if __name__ == "__main__":
         train_mode=args.train_mode,
         epoch_size=len(train_dataloader),
         hardware_compat=args.compile,
+        num_channels=3 if args.rgb else 1,
     ).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(
@@ -158,7 +161,9 @@ if __name__ == "__main__":
     print("best epoch: {}, psnr: {:.2f}".format(best_epoch, best_psnr))
     torch.save(best_weights, os.path.join(args.outputs_dir, "best.pth"))
     if args.compile:
-        traced = symbolic_trace(model),
+        model = model.to("cpu")
+        model = resize_activation_sparsity_mask(model, (1, 10, 10))
+        traced = symbolic_trace(model)
         print(str(traced))
         with open(os.path.join(args.outputs_dir, "compiled.pkl"), "wb") as f:
             f.write(cloudpickle.dumps(traced))
