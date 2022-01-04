@@ -43,6 +43,7 @@ if __name__ == "__main__":
     parser.add_argument("--num-workers", type=int, default=8)
     parser.add_argument("--compile", action="store_true")
     parser.add_argument("--rgb", action="store_true")
+    parser.add_argument("--bits", type=int, default=8)
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument(
         "--train-mode",
@@ -95,6 +96,7 @@ if __name__ == "__main__":
         epoch_size=len(train_dataloader),
         hardware_compat=args.compile,
         num_channels=3 if args.rgb else 1,
+        bits=args.bits,
     ).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(

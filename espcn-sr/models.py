@@ -4,7 +4,7 @@ from torch import nn
 from qsparse import prune, quantize
 
 
-def create_p_q(train_mode, epoch_size, hardware_compat=False):
+def create_p_q(train_mode, epoch_size, hardware_compat=False, bits=8):
     def bypass(*args):
         if len(args) == 0:
             return nn.Identity()
@@ -17,7 +17,7 @@ def create_p_q(train_mode, epoch_size, hardware_compat=False):
     def q(*args, c=0):
         if hardware_compat:
             c = -1
-            bias_bits = 12
+            bias_bits = int(bits * 1.5)
         else:
             bias_bits = -1
 
@@ -27,6 +27,7 @@ def create_p_q(train_mode, epoch_size, hardware_compat=False):
                     timeout=epoch_size * (150 if quantize_first else 170),
                     channelwise=-1,
                     window_size=ws,
+                    bits=bits,
                 )
                 if len(args) == 0
                 else quantize(
@@ -35,6 +36,7 @@ def create_p_q(train_mode, epoch_size, hardware_compat=False):
                     window_size=1,
                     channelwise=c or 1,
                     bias_bits=bias_bits,
+                    bits=bits,
                 )
             )
         else:
@@ -80,9 +82,10 @@ class ESPCN(nn.Module):
         train_mode="float",
         epoch_size=-1,
         hardware_compat=False,
+        bits=8,
     ):
         super(ESPCN, self).__init__()
-        p, q = create_p_q(train_mode, epoch_size, hardware_compat)
+        p, q = create_p_q(train_mode, epoch_size, hardware_compat, bits=bits)
         self.qin = q()
         self.first_part = nn.Sequential(
             q(nn.Conv2d(num_channels, 64, kernel_size=5, padding=5 // 2)),
