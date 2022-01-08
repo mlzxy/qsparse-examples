@@ -164,6 +164,8 @@ if __name__ == "__main__":
     torch.save(best_weights, os.path.join(args.outputs_dir, "best.pth"))
     if args.compile:
         model = model.to("cpu")
+        with open(os.path.join(args.outputs_dir, "final_model.pkl"), "wb") as f:
+            cloudpickle.dump(model, f)
         model = resize_activation_sparsity_mask(model, (1, 10, 10))
         traced = symbolic_trace(model)
         print(str(traced))
