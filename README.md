@@ -1,4 +1,4 @@
-# QSPARSE Examples
+<!-- # QSPARSE Examples
 
 This repository contains following examples for QSPARSE, which are also the codebase for the experiments in [Training Deep Neural Networks with Joint Quantization and Pruning of Weights and Activations](https://arxiv.org/abs/2110.08271). 
 
@@ -27,3 +27,4 @@ If you find this open source release useful, please reference in your paper:
   year={2021}
 }
 ```
+ -->
